@@ -43,6 +43,38 @@ This project implements a "Secure Drop" service where users can store sensitive 
     *   **API Base URL**: `http://localhost:8000/api/v1`
     *   **Documentation**: `http://localhost:8000/docs`
 
+## Deployment
+
+The application is "Deployment Ready" for various platforms.
+
+### Option 1: Heroku (Recommended for quick demo)
+
+1.  **Install Heroku CLI** and login (`heroku login`).
+2.  **Create an app**: `heroku create secure-drop-api`
+3.  **Add Database**: `heroku addons:create heroku-postgresql:mini`
+4.  **Set Environment Variables**:
+    ```bash
+    heroku config:set APP_KEY=$(php artisan key:generate --show)
+    heroku config:set APP_DEBUG=false
+    heroku config:set APP_URL=https://your-app-name.herokuapp.com
+    ```
+5.  **Deploy**:
+    ```bash
+    git push heroku main
+    ```
+6.  **Visit**: `https://your-app-name.herokuapp.com/docs`
+
+### Option 2: DigitalOcean / VPS (Docker)
+
+1.  **Provision a Droplet** (Ubuntu with Docker pre-installed).
+2.  **Clone the repo** onto the server.
+3.  **Set up `.env`**: Copy `.env.example` to `.env` and set production values.
+4.  **Run**:
+    ```bash
+    docker-compose up -d --build
+    ```
+5.  **Access**: `http://YOUR_DROPLET_IP`
+
 ## Architecture Decisions
 
 *   **Service-Repository Pattern**:
@@ -98,8 +130,8 @@ This project implements a "Secure Drop" service where users can store sensitive 
 
 ## Running Tests
 
-To run the automated tests within the Docker container:
+To run the feature tests:
 
 ```bash
-docker-compose exec app php artisan test
+php artisan test
 ```
