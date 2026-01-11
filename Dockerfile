@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -30,8 +30,8 @@ COPY . /var/www
 COPY --chown=www-data:www-data . /var/www
 
 # Copy entrypoint
-COPYdos2unix /usr/local/bin/entrypoint.sh
-RUN  docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN dos2unix /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Change current user to www

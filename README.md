@@ -49,6 +49,18 @@ The application is "Deployment Ready" for various platforms.
 
 ### Option 1: Heroku (Recommended for quick demo)
 
+**One-Click Deployment Script (Windows PowerShell):**
+We have included a script to automate the entire Heroku deployment process.
+
+1.  Open PowerShell in the project root.
+2.  Run:
+    ```powershell
+    .\deploy.ps1
+    ```
+    (You will be prompted to log in to Heroku if you haven't already).
+
+**Manual Deployment:**
+
 1.  **Install Heroku CLI** and login (`heroku login`).
 2.  **Create an app**: `heroku create secure-drop-api`
 3.  **Add Database**: `heroku addons:create heroku-postgresql:mini`
