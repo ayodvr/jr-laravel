@@ -17,14 +17,24 @@ nginx -t
 echo "Clearing caches..."
 rm -f bootstrap/cache/*.php
 
-# Register packages and clear caches
+# Ensure permissions are correct at runtime
+echo "Fixing permissions..."
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# Dump autoloader to ensure it's fresh
+echo "Dumping autoloader..."
+composer dump-autoload --optimize
+
+# Register packages
 echo "Discovering packages..."
 php artisan package:discover --ansi
 
-echo "Clearing config/view/route caches..."
-php artisan config:clear
-php artisan view:clear
-php artisan route:clear
+# Cache configuration, events, routes, and views for production
+echo "Caching configuration..."
+php artisan config:cache
+php artisan event:cache
+php artisan route:cache
+php artisan view:cache
 
 # Run migrations
 echo "Running migrations..."
