@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    dos2unix
+    dos2unix \
+    nginx
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -29,6 +30,12 @@ COPY . /var/www
 # Copy existing application directory permissions
 COPY --chown=www-data:www-data . /var/www
 
+# Configure Nginx
+COPY docker/nginx/render.conf /etc/nginx/conf.d/default.conf
+RUN chown -R www-data:www-data /etc/nginx/conf.d \
+    && chown -R www-data:www-data /var/log/nginx \
+    && chown -R www-data:www-data /var/lib/nginx
+
 # Copy entrypoint
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN dos2unix /usr/local/bin/entrypoint.sh
@@ -37,6 +44,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Change current user to www
 USER www-data
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
+# Expose port (Render sets PORT env var, but we expose 80 as default)
+EXPOSE 80
+
 ENTRYPOINT ["entrypoint.sh"]
