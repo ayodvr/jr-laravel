@@ -7,6 +7,11 @@ PORT=${PORT:-80}
 # Update Nginx port
 sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/nginx/conf.d/default.conf
 
+# Log Nginx config for debugging
+echo "Verifying Nginx configuration..."
+nginx -t
+
+
 # Install dependencies if vendor is missing (for first run)
 if [ ! -f "vendor/autoload.php" ]; then
     composer install

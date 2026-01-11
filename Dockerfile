@@ -32,6 +32,7 @@ COPY --chown=www-data:www-data . /var/www
 
 # Configure Nginx
 COPY docker/nginx/render.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 RUN chown -R www-data:www-data /etc/nginx/conf.d \
     && chown -R www-data:www-data /var/log/nginx \
     && chown -R www-data:www-data /var/lib/nginx
