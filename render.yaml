@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: secure-drop-api
+    env: php
+    plan: free
+    buildCommand: composer install --no-dev --optimize-autoloader && php artisan migrate --force
+    startCommand: heroku-php-nginx public/
+    envVars:
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        sync: false
+    databases:
+      - name: secure-drop-db
+        plan: free
+
+databases:
+  - name: secure-drop-db
+    plan: free
+    ipAllowList: []
