@@ -26,7 +26,7 @@
             </style>
 
     <script>
-        var tryItOutBaseUrl = "http://localhost:8000";
+        var tryItOutBaseUrl = "{{ config("app.url") }}";
         var useCsrf = Boolean();
         var csrfUrl = "/sanctum/csrf-cookie";
     </script>
@@ -100,7 +100,7 @@
     <div class="content">
         <h1 id="introduction">Introduction</h1>
 <aside>
-    <strong>Base URL</strong>: <code>http://localhost:8000</code>
+    <strong>Base URL</strong>: <code>{{ config("app.url") }}</code>
 </aside>
 <pre><code>This documentation aims to provide all the information you need to work with our API.
 
@@ -127,14 +127,14 @@ You can switch the language used with the tabs at the top right (or from the nav
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/user" \
+    --get "{{ config("app.url") }}/api/user" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/user"
+    "{{ config("app.url") }}/api/user"
 );
 
 const headers = {
@@ -253,7 +253,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v1/secrets" \
+    "{{ config("app.url") }}/api/v1/secrets" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -265,7 +265,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/secrets"
+    "{{ config("app.url") }}/api/v1/secrets"
 );
 
 const headers = {
@@ -399,14 +399,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v1/secrets/&amp;quot;9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d&amp;quot;" \
+    --get "{{ config("app.url") }}/api/v1/secrets/&amp;quot;9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d&amp;quot;" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/secrets/&amp;quot;9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d&amp;quot;"
+    "{{ config("app.url") }}/api/v1/secrets/&amp;quot;9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d&amp;quot;"
 );
 
 const headers = {
