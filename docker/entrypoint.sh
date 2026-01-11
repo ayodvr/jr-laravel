@@ -11,12 +11,6 @@ sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/nginx/conf.d/default.conf
 echo "Verifying Nginx configuration..."
 nginx -t
 
-
-# Install dependencies if vendor is missing (for first run)
-if [ ! -f "vendor/autoload.php" ]; then
-    composer install
-fi
-
 # Run migrations
 php artisan migrate --force
 
