@@ -42,6 +42,7 @@ I added a PowerShell script (`deploy.ps1`) that handles the heavy lifting if you
 
 **Option 2: Render**
 I really like Render for this kind of stuff. I included a `render.yaml` file so you can just connect your GitHub repo and it'll auto-configure the web service and the Postgres database.
+[Live Demo](https://secure-drop-ut9g.onrender.com/)
 
 **Option 3: Old School VPS**
 If you have a DigitalOcean droplet or similar:
