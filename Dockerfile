@@ -33,8 +33,10 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist
 # Copy existing application directory contents
 COPY . /var/www
 
-# Fix permissions
-RUN chown -R www-data:www-data /var/www
+# Create necessary directories and set permissions
+RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data /var/www
 
 # Configure Nginx
 COPY docker/nginx/render.conf /etc/nginx/conf.d/default.conf
