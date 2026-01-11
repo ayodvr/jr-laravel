@@ -17,9 +17,10 @@ nginx -t
 echo "Clearing caches..."
 rm -f bootstrap/cache/*.php
 
-# Ensure permissions are correct at runtime
-echo "Fixing permissions..."
-chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Check for APP_KEY
+if [ -z "$APP_KEY" ]; then
+    echo "Error: APP_KEY is not set. Please set it in your Render environment variables."
+fi
 
 # Dump autoloader to ensure it's fresh
 echo "Dumping autoloader..."

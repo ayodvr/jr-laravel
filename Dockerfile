@@ -54,6 +54,9 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Change current user to www
 USER www-data
 
+# Set environment variables
+ENV LOG_CHANNEL=stderr
+
 # Expose port (Render sets PORT env var, but we expose 80 as default)
 EXPOSE 80
 
