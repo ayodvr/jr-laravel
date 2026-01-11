@@ -35,6 +35,7 @@ COPY . /var/www
 
 # Create necessary directories and set permissions
 RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
+    && rm -f bootstrap/cache/*.php \
     && chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data /var/www
 
