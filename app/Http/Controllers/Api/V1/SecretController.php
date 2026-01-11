@@ -24,6 +24,8 @@ class SecretController extends Controller
      */
     public function store(Request $request)
     {
+        // Simple validation. 
+        // We could move this to a FormRequest if it gets more complex later.
         $validator = Validator::make($request->all(), [
             'text' => 'required|string',
             'ttl' => 'nullable|integer|min:0',
@@ -36,6 +38,7 @@ class SecretController extends Controller
         $text = $request->input('text');
         $ttl = $request->input('ttl');
 
+        // Hand off to the service layer
         $secret = $this->secretService->storeSecret($text, $ttl);
 
         return response()->json([

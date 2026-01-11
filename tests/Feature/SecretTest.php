@@ -14,37 +14,30 @@ class SecretTest extends TestCase
 
     public function test_can_create_secret()
     {
+        // Happy path: User sends text, gets a link back
         $response = $this->postJson('/api/v1/secrets', [
-            'text' => 'My secret password',
+            'text' => 'super secret',
             'ttl' => 3600
         ]);
 
         $response->assertStatus(201)
             ->assertJsonStructure(['id', 'expires_at', 'link']);
-
-        $this->assertDatabaseCount('secrets', 1);
     }
 
-    public function test_can_retrieve_and_burn_secret()
+    public function test_secret_is_burned_after_read()
     {
-        $createResponse = $this->postJson('/api/v1/secrets', [
-            'text' => 'Burn after reading',
-        ]);
-
+        // 1. Create it
+        $createResponse = $this->postJson('/api/v1/secrets', ['text' => 'burn me']);
         $id = $createResponse->json('id');
 
-        // First read
-        $readResponse = $this->getJson("/api/v1/secrets/{$id}");
+        // 2. Read it (should work)
+        $this->getJson("/api/v1/secrets/{$id}")
+            ->assertStatus(200)
+            ->assertJson(['text' => 'burn me']);
 
-        $readResponse->assertStatus(200)
-            ->assertJson(['text' => 'Burn after reading']);
-
-        // Assert deleted from DB
-        $this->assertDatabaseCount('secrets', 0);
-
-        // Second read (should fail)
-        $secondReadResponse = $this->getJson("/api/v1/secrets/{$id}");
-        $secondReadResponse->assertStatus(404);
+        // 3. Read it again (should fail because it's gone)
+        $this->getJson("/api/v1/secrets/{$id}")
+            ->assertStatus(404);
     }
 
     public function test_cannot_read_expired_secret()

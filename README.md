@@ -1,149 +1,91 @@
 # Secure Drop API
 
-A RESTful API for creating and retrieving "self-destructing" secure notes.
+Hey! This is a simple API I built for creating "burn-on-read" secure notes. Think of it like a self-destructing message service. You send a secret, get a link, and once someone opens it, it's gone forever.
 
-## Overview
+## About this project
 
-This project implements a "Secure Drop" service where users can store sensitive information (secrets) and share them via a unique link. The secret is permanently deleted ("burned") once it is retrieved.
+The main goal here was to build a secure way to share sensitive info (like passwords or API keys) without leaving a trace. It uses UUIDs for unguessable URLs and encrypts everything in the database.
 
-## Features
+## What it does
 
-*   **Create Secret**: Store a text string with an optional expiration time (TTL).
-*   **Retrieve Secret**: Get the decrypted text. The record is deleted immediately after reading.
-*   **Burn on Read**: Secrets are one-time use only.
-*   **Encryption**: All secrets are encrypted at rest using Laravel's encryption facilities.
-*   **UUIDs**: Unique IDs for secrets to prevent enumeration.
-*   **API Documentation**: Auto-generated documentation using Scribe.
-*   **Dockerized**: Easy setup with Docker and Docker Compose.
-*   **Architecture**: Follows strict Service-Repository pattern.
+*   **Create Secret**: You POST some text, and I give you a one-time link. You can also set a TTL (time-to-live) if you want it to expire automatically.
+*   **Burn on Read**: The moment the secret is retrieved, I delete it from the database. Poof.
+*   **Encryption**: Everything is encrypted at rest using Laravel's encryption (AES-256-CBC). Even if the DB is compromised, the secrets are safe.
+*   **Dockerized**: I've included a Docker setup so you can spin it up easily without messing with your local PHP version.
 
 ## Requirements
 
-*   Docker & Docker Compose
+*   Docker & Docker Compose (or just a local PHP/MySQL setup if you prefer)
 
-## Installation & Running
+## How to run it
 
-1.  **Clone the repository** (if not already done).
+### Using Docker (Recommended)
 
-2.  **Run with Docker Compose**:
-
+1.  Clone this repo.
+2.  Run the containers:
     ```bash
     docker-compose up -d --build
     ```
+    This sets up Nginx, PHP-FPM, and MySQL. It might take a minute the first time to pull the images.
 
-    This command will:
-    *   Build the application image.
-    *   Start the Nginx web server, PHP-FPM app container, and MySQL database.
-    *   Install PHP dependencies via Composer (if not present).
-    *   Run database migrations.
-    *   Expose the API at `http://localhost:8000`.
+3.  That's it! The API will be at `http://localhost:8000/api/v1`.
+    *   Docs are here: `http://localhost:8000/docs`
 
-3.  **Access the Application**:
+### Deployment
 
-    *   **API Base URL**: `http://localhost:8000/api/v1`
-    *   **Documentation**: `http://localhost:8000/docs`
+I've made it pretty easy to deploy this to a few places.
 
-## Deployment
+**Option 1: Heroku**
+I added a PowerShell script (`deploy.ps1`) that handles the heavy lifting if you're on Windows.
+1.  Login: `heroku login`
+2.  Run: `.\deploy.ps1`
 
-The application is "Deployment Ready" for various platforms.
+**Option 2: Render**
+I really like Render for this kind of stuff. I included a `render.yaml` file so you can just connect your GitHub repo and it'll auto-configure the web service and the Postgres database.
 
-### Option 1: Heroku (Recommended for quick demo)
+**Option 3: Old School VPS**
+If you have a DigitalOcean droplet or similar:
+1.  Clone the repo.
+2.  Copy `.env.example` to `.env` and fill in your DB details.
+3.  `docker-compose up -d --build`
 
-**One-Click Deployment Script (Windows PowerShell):**
-We have included a script to automate the entire Heroku deployment process.
+## How I built it (Architecture)
 
-1.  Open PowerShell in the project root.
-2.  Run:
-    ```powershell
-    .\deploy.ps1
-    ```
-    (You will be prompted to log in to Heroku if you haven't already).
+I tried to keep things clean using the **Service-Repository Pattern**:
 
-**Manual Deployment:**
+*   **Controller**: Handles the HTTP stuff (requests/responses).
+*   **Service**: This is where the magic happens (encryption, checking if it's expired, deleting it after read).
+*   **Repository**: Just deals with the database.
 
-1.  **Install Heroku CLI** and login (`heroku login`).
-2.  **Create an app**: `heroku create secure-drop-api`
-3.  **Add Database**: `heroku addons:create heroku-postgresql:mini`
-4.  **Set Environment Variables**:
-    ```bash
-    heroku config:set APP_KEY=$(php artisan key:generate --show)
-    heroku config:set APP_DEBUG=false
-    heroku config:set APP_URL=https://your-app-name.herokuapp.com
-    ```
-5.  **Deploy**:
-    ```bash
-    git push heroku main
-    ```
-6.  **Visit**: `https://your-app-name.herokuapp.com/docs`
+I used **MySQL** for the Docker setup because it's robust, but SQLite works fine for local testing too.
 
-### Option 2: DigitalOcean / VPS (Docker)
+## Endpoints
 
-1.  **Provision a Droplet** (Ubuntu with Docker pre-installed).
-2.  **Clone the repo** onto the server.
-3.  **Set up `.env`**: Copy `.env.example` to `.env` and set production values.
-4.  **Run**:
-    ```bash
-    docker-compose up -d --build
-    ```
-5.  **Access**: `http://YOUR_DROPLET_IP`
+Here's a quick cheat sheet. For full details check the `/docs` endpoint.
 
-## Architecture Decisions
-
-*   **Service-Repository Pattern**:
-    *   `SecretController`: Handles HTTP requests and responses. Delegates business logic to the Service.
-    *   `SecretService`: Contains business logic (encryption, checking expiration, burning on read). Delegates data access to the Repository.
-    *   `SecretRepository`: Abstraction layer for database operations (Eloquent). Implements `SecretRepositoryInterface`.
-*   **Database**: MySQL is used in the Docker environment for robustness, though SQLite is configured for local testing.
-*   **Security**:
-    *   Laravel's `Crypt` facade is used for AES-256-CBC encryption.
-    *   UUIDs are used instead of auto-incrementing IDs to prevent ID guessing.
-    *   Secrets are hard-deleted from the database upon retrieval.
-
-## API Endpoints
-
-### 1. Create a Secret
-
-**POST** `/api/v1/secrets`
-
-**Body:**
+### 1. Save a Secret
+`POST /api/v1/secrets`
 ```json
 {
-    "text": "My super secret password",
-    "ttl": 3600 // Optional: Time to live in seconds
+    "text": "super_secret_stuff",
+    "ttl": 3600 // optional, in seconds
 }
 ```
 
-**Response (201 Created):**
-```json
-{
-    "id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
-    "expires_at": "2026-01-11T13:00:00.000000Z",
-    "link": "http://localhost:8000/api/v1/secrets/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
-}
-```
+### 2. Read a Secret
+`GET /api/v1/secrets/{id}`
 
-### 2. Retrieve a Secret
+Returns the text and **deletes** the record. If you try to access it again, you'll get a 404.
 
-**GET** `/api/v1/secrets/{id}`
+## Testing
 
-**Response (200 OK):**
-```json
-{
-    "text": "My super secret password"
-}
-```
-
-**Response (404 Not Found):**
-```json
-{
-    "error": "Secret not found or already viewed."
-}
-```
-
-## Running Tests
-
-To run the feature tests:
-
+I wrote some feature tests to make sure the "burn" logic actually works.
+Run them with:
 ```bash
 php artisan test
 ```
+
+## TODO / Future stuff
+
+*   [ ] Add a cron job to clean up expired secrets that were never read (right now they sit there until accessed).
+*   [ ] Maybe add a simple frontend? curl is fine but a UI would be nice.
