@@ -26,9 +26,13 @@ fi
 echo "Dumping autoloader..."
 composer dump-autoload --optimize
 
-# Register packages
+# Discover packages
 echo "Discovering packages..."
 php artisan package:discover --ansi
+
+# Publish Scribe assets
+echo "Publishing Scribe assets..."
+php artisan vendor:publish --tag=scribe-assets --force
 
 # Cache configuration, events, routes, and views for production
 echo "Caching configuration..."
